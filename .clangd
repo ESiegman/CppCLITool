@@ -1,0 +1,7 @@
+CompileFlags:
+  Add: [-std=c++23]
+  Add: [-isystem, /nix/store/*]
+
+QueryDriver:
+  - g++
+  - gcc
