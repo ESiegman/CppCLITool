@@ -17,7 +17,8 @@
       cpp-cli = stdenv.mkDerivation {
         pname = "cpp-cli";
         version = "1.0.0";
-        src = ./.;
+
+        src = pkgs.lib.cleanSource ./.;
 
         nativeBuildInputs = with pkgs; [
           cmake
@@ -29,7 +30,10 @@
           yaml-cpp
         ];
 
-        cmakeFlags = ["-G Ninja"];
+        cmakeFlags = [
+          "-G Ninja"
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+        ];
 
         installPhase = ''
           mkdir -p $out/bin
@@ -47,12 +51,17 @@
     devShells.${system}.default = pkgs.mkShell.override {inherit stdenv;} {
       packages = with pkgs; [
         cmake
-        gnumake
+        ninja
         pkg-config
         yaml-cpp
         llvmPackages_18.clang-tools
-        ninja
+        gnumake
       ];
+
+      shellHook = ''
+        export CPLUS_INCLUDE_PATH="${pkgs.yaml-cpp}/include:$CPLUS_INCLUDE_PATH"
+        exec zsh
+      '';
     };
   };
 }
